@@ -1,39 +1,53 @@
 import streamlit as st
-from langchain_openai import ChatOpenAI  # Importação atualizada
+from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 import os
+from dotenv import load_dotenv
 import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Carregar a chave da API do arquivo config.yaml
+# Carregar variáveis do .env
+load_dotenv()
+
+# Função para carregar a chave da API
 def carregar_chave_api():
-    """Carrega a chave da API do arquivo config.yaml e define como variável de ambiente."""
+    """Tenta carregar a chave do .env e, se não encontrar, tenta o config.yaml."""
+    # Primeiro, tenta carregar a chave do .env
+    api_key = os.getenv('OPENAI_API_KEY')
+    if api_key:
+        #st.write("Chave carregada do .env")  # Debug para monitorar
+        return api_key
+
+    # Se não encontrada no .env, tenta carregar do config.yaml
     try:
         with open('config.yaml', 'r') as config_file:
-            config = yaml.safe_load(config_file)
-        os.environ['OPENAI_API_KEY'] = config['OPENAI_API_KEY']
-    except FileNotFoundError:
-        st.error("Arquivo config.yaml não encontrado. Verifique se ele está no diretório correto.")
+            config = yaml.safe_load(config_file) or {}
+            api_key = config.get('OPENAI_API_KEY')
+        
+        if api_key and api_key != "USE_ENV":
+            #st.write("Chave carregada do config.yaml")  # Debug para monitorar
+            return api_key
+        else:
+            raise ValueError("Chave não encontrada ou é um placeholder.")
+
+    except (FileNotFoundError, ValueError) as e:
+        st.error("Erro: Chave da API não encontrada. Verifique seu .env ou config.yaml.")
         st.stop()
-    except KeyError:
-        st.error("A chave 'OPENAI_API_KEY' não foi encontrada no arquivo config.yaml.")
-        st.stop()
-    except Exception as e:
-        st.error(f"Erro ao carregar a chave da API: {e}")
-        st.stop()
+
+# Carregar a chave da API
+api_key = carregar_chave_api()
 
 # Inicializar o modelo ChatOpenAI
 def inicializar_modelo():
-    """Inicializa o modelo OpenAI e retorna a instância."""
+    """Inicializa o modelo OpenAI."""
     try:
-        return ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0)
+        return ChatOpenAI(api_key=api_key, model_name='gpt-3.5-turbo', temperature=0)
     except Exception as e:
         st.error(f"Erro ao inicializar o modelo OpenAI: {e}")
         st.stop()
 
-# Carregar a chave da API e inicializar o modelo
-carregar_chave_api()
+# Inicializar o modelo
 openai = inicializar_modelo()
 
 # Definir o template do prompt
