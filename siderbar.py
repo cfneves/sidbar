@@ -7,20 +7,34 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Carregar a chave da API do arquivo config.yaml
-try:
-    with open('config.yaml', 'r') as config_file:
-        config = yaml.safe_load(config_file)
-    os.environ['OPENAI_API_KEY'] = config['OPENAI_API_KEY']
-except Exception as e:
-    st.error("Erro ao carregar a chave da API. Verifique o arquivo config.yaml.")
-    st.stop()
+def carregar_chave_api():
+    """Carrega a chave da API do arquivo config.yaml e define como variável de ambiente."""
+    try:
+        with open('config.yaml', 'r') as config_file:
+            config = yaml.safe_load(config_file)
+        os.environ['OPENAI_API_KEY'] = config['OPENAI_API_KEY']
+    except FileNotFoundError:
+        st.error("Arquivo config.yaml não encontrado. Verifique se ele está no diretório correto.")
+        st.stop()
+    except KeyError:
+        st.error("A chave 'OPENAI_API_KEY' não foi encontrada no arquivo config.yaml.")
+        st.stop()
+    except Exception as e:
+        st.error(f"Erro ao carregar a chave da API: {e}")
+        st.stop()
 
 # Inicializar o modelo ChatOpenAI
-try:
-    openai = ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0)
-except Exception as e:
-    st.error("Erro ao inicializar o modelo OpenAI. Verifique sua conexão e chave da API.")
-    st.stop()
+def inicializar_modelo():
+    """Inicializa o modelo OpenAI e retorna a instância."""
+    try:
+        return ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0)
+    except Exception as e:
+        st.error(f"Erro ao inicializar o modelo OpenAI: {e}")
+        st.stop()
+
+# Carregar a chave da API e inicializar o modelo
+carregar_chave_api()
+openai = inicializar_modelo()
 
 # Definir o template do prompt
 template = '''
@@ -59,6 +73,7 @@ analise = st.sidebar.selectbox('Selecione a análise:', analises)
 
 # Função para gerar um gráfico de exemplo
 def gerar_grafico_exemplo():
+    """Gera um gráfico de exemplo com dados aleatórios."""
     fig, ax = plt.subplots()
     dados = np.random.rand(10)
     ax.plot(dados, marker='o')
