@@ -1,1 +1,1 @@
-OPENAI_API_KEY = "USE_ENV"  # Placeholder indicando que a chave será buscada do .env
+OPENAI_API_KEY: "USE_ENV"  # Placeholder indicando que a chave será buscada do .env
