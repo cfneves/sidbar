@@ -71,6 +71,26 @@ analises = [
 # Título principal
 st.title('📊 Gerador de Relatório Financeiro')
 
+# Menu de Comentário Expansível
+with st.expander("ℹ️ Como funciona este relatório?", expanded=False):
+    st.markdown(
+        """
+        Este relatório foi desenvolvido para fornecer análises financeiras detalhadas de uma empresa específica 
+        em um determinado período. As opções disponíveis permitem configurar a **empresa**, **trimestre**, 
+        **ano**, **idioma** e o tipo de **análise financeira** que deseja realizar.
+        
+        **Funcionalidades principais:**
+        - **Análise do Balanço Patrimonial:** Revisão detalhada dos ativos e passivos da empresa.
+        - **Fluxo de Caixa:** Exame dos fluxos de entrada e saída de caixa durante o período.
+        - **Análise de Tendências:** Identificação de padrões financeiros ao longo do tempo.
+        - **Receita e Lucro:** Avaliação do desempenho financeiro da empresa.
+        - **Posição de Mercado:** Análise comparativa da posição da empresa no mercado.
+
+        Ao gerar o relatório, um modelo de linguagem será utilizado para criar uma análise textual, 
+        e um gráfico será gerado para ilustrar os dados analisados.
+        """
+    )
+
 # Separador de seções
 st.divider()
 
